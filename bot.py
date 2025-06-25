@@ -105,7 +105,7 @@ def validate_ticker_and_price_data(message):
         # Fetch price data from Yahoo Finance
         bot.send_message(message.chat.id, "Attempting download of price data. Please wait.")
         logger.info(f"chat_id: {message.chat.id}: Download price data for {validated_ticker}")
-        price_data = yf.download(validated_ticker, period="1y")
+        price_data = yf.download(validated_ticker, period="1y", auto_adjust=True, progress=False)
 
         # Check if price data is available
         if price_data.empty:
@@ -123,7 +123,7 @@ def validate_ticker_and_price_data(message):
 def validate_ticker(message):
     """Validates the stock ticker entered by the user."""
     logger.info(f"chat_id: {message.chat.id}: Validating ticker symbol {message.text}")
-    if any(s in message.text for s in "., "):
+    if any(s in message.text for s in ", "):
         send_error_message(message, category="ticker symbol", reason="an illegal character")
         logger.info(f"chat_id: {message.chat.id}: Error message sent due to illegal character in ticker symbol: {message.text}")
     else:

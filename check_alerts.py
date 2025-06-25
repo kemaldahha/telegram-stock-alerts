@@ -39,7 +39,7 @@ def main():
     logger.info(f"Downloading price data for all alerts")
 
     # Download price data for all tickers over the past year
-    price_data = yf.download(all_tickers, period="1y")
+    price_data = yf.download(all_tickers, period="1y", auto_adjust=True, progress=False)
 
     # Check the last price against the alert level for each alert
     for alert in all_alerts:
