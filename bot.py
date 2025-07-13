@@ -3,11 +3,19 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import yfinance as yf
 import database
+import logging
 from logger_config import setup_logger
 import os
 
-# Set up logging
 logger = setup_logger(os.path.basename(__file__))
+
+class IgnorePeerReset(logging.Filter):
+    def filter(self, r):
+        m = r.getMessage()
+        return ("Connection reset by peer" not in m and "Read timed out" not in m)
+
+logging.getLogger("TeleBot").addFilter(IgnorePeerReset())
+logging.getLogger("urllib3.connectionpool").addFilter(IgnorePeerReset())
 
 # Telegram token stored in constants.py
 TELEGRAM_TOKEN = constants.TELEGRAM_TOKEN
