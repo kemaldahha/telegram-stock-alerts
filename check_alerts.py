@@ -46,7 +46,12 @@ def main():
         alert_id, chat_id, ticker, alert_level, last_close, _ = alert
 
         # Get the latest close price for the current ticker
-        current_close = round(price_data[("Close", ticker)].loc[price_data[("Close", ticker)].last_valid_index()], 2)
+        try:
+            current_close = round(price_data[("Close", ticker)].loc[price_data[("Close", ticker)].last_valid_index()], 2)
+        except KeyError:
+            logger.warning(f"Could not find price data for {alert[2]}. Possibly delisted. Skipped.")
+            bot.send_message(chat_id, f"<b>Warning</b>: Could not find price data for {alert[2]}. Possibly delisted.", parse_mode="html")
+            continue
 
         # Handle alerts based on Moving Average (MA)
         if "MA" in alert_level:
@@ -83,6 +88,7 @@ def main():
                 logger.info(f"chat_id: {chat_id}: Alert not triggered for {ticker} at alert level {alert_level}. Updating close price from {last_close} to {current_close}.")
     
     logger.info("End")
+    bot.send_message(chat_id, "Alerts have all been checked.")
 
 if __name__ == "__main__":
     main()
